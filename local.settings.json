@@ -1,8 +1,0 @@
-{
-  "IsEncrypted": false,
-  "Values": {
-    "FUNCTIONS_WORKER_RUNTIME": "node",
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "AZURE_CONNECTION_STRING": "Endpoint=https://appconfig-products-service-sand-ne-123.azconfig.io;Id=Ox0P;Secret=AjIYU1NFDbTQO7Dq7bT6ujuaP9OM3QhhcAXkhVd1WdA="
-  }
-}
