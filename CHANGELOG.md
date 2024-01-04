@@ -1,3 +1,7 @@
+## [1.0.3] - 2024-01-04
+
+-   Used CosmosDB for functions
+
 ## [1.0.2] - 2023-12-22
 
 -   Used App Configuration

@@ -1,3 +1,5 @@
+data "azurerm_client_config" "current" {}
+
 provider "azurerm" {
   features {}
 }
@@ -159,6 +161,7 @@ resource "azurerm_api_management_api_policy" "api_policy" {
             </allowed-origins>
             <allowed-methods>
                 <method>GET</method>
+                <method>POST</method>
             </allowed-methods>
             <allowed-headers>
                 <header>*</header>
@@ -212,10 +215,101 @@ resource "azurerm_api_management_api_operation" "get_product_by_id" {
   }
 }
 
+resource "azurerm_api_management_api_operation" "post_product" {
+  api_management_name = azurerm_api_management.core_apim.name
+  api_name            = azurerm_api_management_api.products_api.name
+  display_name        = "Post Product"
+  method              = "POST"
+  operation_id        = "post-product"
+  resource_group_name = azurerm_resource_group.apim.name
+  url_template        = "/products"
+}
+
+resource "azurerm_api_management_api_operation" "health" {
+  api_management_name = azurerm_api_management.core_apim.name
+  api_name            = azurerm_api_management_api.products_api.name
+  display_name        = "Health"
+  method              = "GET"
+  operation_id        = "health"
+  resource_group_name = azurerm_resource_group.apim.name
+  url_template        = "/health"
+}
+
 resource "azurerm_app_configuration" "products_config" {
   location            = "northeurope"
   name                = "appconfig-products-service-sand-ne-123"
   resource_group_name = azurerm_resource_group.product_service_rg.name
 
   sku = "free"
+}
+
+resource "azurerm_cosmosdb_account" "cosmosdb_account" {
+  name                = "cosmosdb-account-sand-ne-123"
+  location            = "northeurope"
+  resource_group_name = azurerm_resource_group.product_service_rg.name
+  offer_type          = "Standard"
+
+  consistency_policy {
+  consistency_level       = "BoundedStaleness"
+  max_interval_in_seconds = 300
+  max_staleness_prefix    = 100000
+  }
+
+  geo_location {
+    location          = "northeurope"
+    failover_priority = 0
+  }
+}
+
+resource "azurerm_cosmosdb_sql_database" "cosmos_database" {
+  name                = "cosmosdb-database-sand-ne-123"
+  resource_group_name = azurerm_resource_group.product_service_rg.name
+  account_name        = azurerm_cosmosdb_account.cosmosdb_account.name
+}
+
+resource "azurerm_cosmosdb_sql_container" "product" {
+  name                = "Product"
+  resource_group_name = azurerm_resource_group.product_service_rg.name
+  account_name        = azurerm_cosmosdb_account.cosmosdb_account.name
+  database_name       = azurerm_cosmosdb_sql_database.cosmos_database.name
+  partition_key_path    = "/id"
+
+  indexing_policy {
+    indexing_mode = "consistent"
+  }
+}
+
+resource "azurerm_cosmosdb_sql_container" "stock" {
+  name                = "Stock"
+  resource_group_name = azurerm_resource_group.product_service_rg.name
+  account_name        = azurerm_cosmosdb_account.cosmosdb_account.name
+  database_name       = azurerm_cosmosdb_sql_database.cosmos_database.name
+  partition_key_path    = "/id"
+
+  indexing_policy {
+    indexing_mode = "consistent"
+  }
+}
+
+resource "azurerm_cosmosdb_sql_role_definition" "read_write_role" {
+  name                = "PasswordlessReadWrite"
+  resource_group_name = azurerm_resource_group.product_service_rg.name
+  account_name        = azurerm_cosmosdb_account.cosmosdb_account.name
+  type                = "CustomRole"
+  assignable_scopes   = [azurerm_cosmosdb_account.cosmosdb_account.id]
+
+  permissions {
+    data_actions = ["Microsoft.DocumentDB/databaseAccounts/readMetadata",
+            "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/*",
+            "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/*"]
+  }
+}
+
+resource "azurerm_cosmosdb_sql_role_assignment" "read_write_role_assignment" {
+  name                = "736180af-7fbc-4c7f-9004-22735173c1c3"
+  resource_group_name = azurerm_resource_group.product_service_rg.name
+  account_name        = azurerm_cosmosdb_account.cosmosdb_account.name
+  role_definition_id  = azurerm_cosmosdb_sql_role_definition.read_write_role.id
+  principal_id        = "f321e0f2-ee2f-4919-8b65-7ab3f41c1fa7"
+  scope               = azurerm_cosmosdb_account.cosmosdb_account.id
 }
