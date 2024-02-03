@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { getDatabase } from './db.service';
-import { Product, Stock } from './faker.service';
 import { TOTAL_PRODUCTS } from './constants';
+import { Product, Stock } from './types';
 
 export interface ProductModel {
     id: string;

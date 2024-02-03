@@ -1,17 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { getDatabase } from './db.service';
-
-export type Product = {
-    id: string;
-    title: string;
-    description: string;
-    price: number;
-};
-
-export type Stock = {
-    product_id: string;
-    count: number;
-};
+import { Product, Stock } from './types';
 
 const generateProducts = (count: number): Product[] => {
     const products: Product[] = [];

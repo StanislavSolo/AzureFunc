@@ -1,3 +1,7 @@
+## [1.0.4] - 2024-02-03
+
+-   added import functions
+
 ## [1.0.3] - 2024-01-04
 
 -   Used CosmosDB for functions

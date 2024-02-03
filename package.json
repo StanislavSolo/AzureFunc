@@ -1,6 +1,6 @@
 {
     "name": "fa-product-service-azure-func",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "",
     "scripts": {
         "build": "tsc",
@@ -12,13 +12,15 @@
     },
     "devDependencies": {
         "@types/node": "18.x",
+        "azure-functions-core-tools": "^4.x",
         "typescript": "^4.0.0"
     },
     "dependencies": {
-        "@azure/identity": "^4.0.0",
-        "@faker-js/faker": "^8.3.1",
-        "@azure/functions": "^3.0.0",
         "@azure/cosmos": "^4.0.0",
-        "azure-functions-core-tools": "^4.x"
+        "@azure/functions": "^3.0.0",
+        "@azure/identity": "^4.0.1",
+        "@azure/storage-blob": "^12.17.0",
+        "@faker-js/faker": "^8.3.1",
+        "csv": "^6.3.6"
     }
 }
