@@ -1,20 +1,26 @@
 {
     "name": "fa-product-service-azure-func",
-    "version": "1.0.2",
+    "version": "1.0.4",
     "description": "",
     "scripts": {
         "build": "tsc",
         "watch": "tsc -w",
         "prestart": "npm run build",
         "start": "func start",
-        "test": "echo \"No tests yet...\""
+        "test": "echo \"No tests yet...\"",
+        "fill_db": "tsc && node ./dist/common/faker.service.js"
     },
     "devDependencies": {
-        "@azure/app-configuration": "^1.5.0",
-        "@azure/functions": "^3.0.0",
-        "@azure/identity": "^4.0.0",
         "@types/node": "18.x",
         "azure-functions-core-tools": "^4.x",
         "typescript": "^4.0.0"
+    },
+    "dependencies": {
+        "@azure/cosmos": "^4.0.0",
+        "@azure/functions": "^3.0.0",
+        "@azure/identity": "^4.0.1",
+        "@azure/storage-blob": "^12.17.0",
+        "@faker-js/faker": "^8.3.1",
+        "csv": "^6.3.6"
     }
 }

@@ -6,23 +6,22 @@ const httpTrigger: AzureFunction = async function (
     req: HttpRequest
 ): Promise<void> {
     try {
-        context.log('HTTP trigger function for get product list');
+        context.log('HTTP trigger function for add new product');
         const productService = new ProductService();
-        const products = await productService.getProductList();
-        console.log(`Recieved ${products.length} products`);
-
+        const product = req.body;
+        productService.validateProduct(product);
+        await productService.createProduct(product);
+        console.log('product added');
         context.res = {
             status: 200,
             headers: {
                 'content-type': 'application/json',
             },
-            body: products,
+            body: 'product added',
         };
     } catch (err) {
         console.error(err);
-        context.res = {
-            status: 500,
-        };
+        context.res = err;
     }
 };
 export default httpTrigger;
