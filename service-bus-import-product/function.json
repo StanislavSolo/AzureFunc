@@ -1,0 +1,12 @@
+{
+    "bindings": [
+        {
+            "name": "mySbMsg",
+            "type": "serviceBusTrigger",
+            "direction": "in",
+            "queueName": "solodukhin_queue",
+            "connection": ""
+        }
+    ],
+    "scriptFile": "../dist/service-bus-import-product/index.js"
+}

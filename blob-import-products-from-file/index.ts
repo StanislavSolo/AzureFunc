@@ -1,6 +1,8 @@
 import { AzureFunction, Context } from '@azure/functions';
-import { BlobServiceClient } from '@azure/storage-blob';
-import { BLOB_CONTAINER_NAME } from '../common/constants';
+import {
+    BLOB_CONTAINER_NAME,
+    SERVICE_BUS_QUEUE_NAME,
+} from '../common/constants';
 import StorageRepository from '../common/storage.repository';
 
 const blobTrigger: AzureFunction = async function (
@@ -19,7 +21,11 @@ const blobTrigger: AzureFunction = async function (
 
     const storageRepository = new StorageRepository(container);
 
-    await storageRepository.readCsv(container, context.bindingData.name);
+    await storageRepository.readCsv(
+        container,
+        context.bindingData.name,
+        SERVICE_BUS_QUEUE_NAME
+    );
     await storageRepository.moveToParseFolder(context.bindingData.name);
 };
 

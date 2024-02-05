@@ -6,9 +6,8 @@ import {
     ContainerClient,
 } from '@azure/storage-blob';
 import ServiceClientProvider from './serviceClientProvider';
-import { parseAndSave } from './parse.service';
-import { csvRowData } from './types';
 import { BLOB_CONTAINER_NAME, PARSE_CONTAINER_NAME } from './constants';
+import { ServiceBusClient } from '@azure/service-bus';
 
 export default class StorageRepository {
     private readonly blobServiceClient: BlobServiceClient;
@@ -54,15 +53,23 @@ export default class StorageRepository {
         return result;
     }
 
-    async readCsv(container: string, fileName: string): Promise<any> {
+    async readCsv(
+        container: string,
+        fileName: string,
+        queue: string
+    ): Promise<any> {
         const blobServiceClient = ServiceClientProvider.getBlobServiceClient();
         const containerClient = blobServiceClient.getContainerClient(container);
         const blobClient = await containerClient.getBlobClient(fileName);
 
         const result = await blobClient.download();
 
+        const serviceBusClient = new ServiceBusClient(
+            process.env.ServiceBusConnectionString
+        );
+        const sender = serviceBusClient.createSender(queue);
+
         const headers = ['title', 'description', 'price', 'count'];
-        const results: csvRowData[] = [];
         result.readableStreamBody
             .pipe(
                 csv.parse({
@@ -70,8 +77,12 @@ export default class StorageRepository {
                     columns: headers,
                 })
             )
-            .on('data', (row) => results.push(row))
-            .on('end', () => parseAndSave(results));
+            .on('data', (row) => {
+                sender.sendMessages({ body: JSON.stringify(row) });
+            })
+            .on('end', () => {
+                sender.close();
+            });
     }
 
     async moveToParseFolder(fileName: string) {

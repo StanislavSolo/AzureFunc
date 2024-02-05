@@ -1,3 +1,7 @@
+## [1.0.5] - 2024-02-05
+
+-   implemented service bus
+
 ## [1.0.4] - 2024-02-03
 
 -   added import functions
