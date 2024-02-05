@@ -1,6 +1,6 @@
 {
     "name": "fa-product-service-azure-func",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "description": "",
     "scripts": {
         "build": "tsc",
@@ -19,6 +19,7 @@
         "@azure/cosmos": "^4.0.0",
         "@azure/functions": "^3.0.0",
         "@azure/identity": "^4.0.1",
+        "@azure/service-bus": "^7.9.3",
         "@azure/storage-blob": "^12.17.0",
         "@faker-js/faker": "^8.3.1",
         "csv": "^6.3.6"
